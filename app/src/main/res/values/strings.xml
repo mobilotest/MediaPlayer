@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Media Player</string>
+    <string name="header1_proverbs">PROVERBS</string>
+    <string name="header2_of_jesus">of JESUS</string>
+
+    <string name="proverb_prodigal_son">Phrases</string>
+    <string name="proverb_ten_virgins">Colors</string>
+    <string name="proverb_invited_chosen">Numbers</string>
+    <string name="proverb_dig_talent">Family Members</string>
+    <string name="proverb_sower">Family Members</string>
+    <string name="proverb_contractors">Family Members</string>
+</resources>
