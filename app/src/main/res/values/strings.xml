@@ -3,10 +3,11 @@
     <string name="header1_proverbs">PROVERBS</string>
     <string name="header2_of_jesus">of JESUS</string>
 
-    <string name="proverb_prodigal_son">Phrases</string>
-    <string name="proverb_ten_virgins">Colors</string>
-    <string name="proverb_invited_chosen">Numbers</string>
-    <string name="proverb_dig_talent">Family Members</string>
-    <string name="proverb_sower">Family Members</string>
-    <string name="proverb_contractors">Family Members</string>
+    <string name="header_3_parable">Parable of the </string>
+    <string name="proverb_ten_virgins"> Ten Virgins</string>
+    <string name="proverb_invited_chosen"> Wedding Feast</string>
+    <string name="proverb_dig_talent"> Talents</string>
+    <string name="proverb_sower"> Sower</string>
+    <string name="proverb_contractors"> Workers in the Vineyard</string>
+    <string name="proverb_prodigal_son"> Prodigal Son</string>
 </resources>
