@@ -4,16 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/list_item_height"
+    android:background="@color/tan_background"
     android:minHeight="@dimen/list_item_height">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="137dp"
-        android:layout_height="match_parent"
-        android:padding="8dp"/>
+        android:layout_width="125dp"
+        android:layout_height="@dimen/list_item_height" />
 
     <RelativeLayout
-        android:id="@+id/text_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_item_height"
         android:layout_alignParentBottom="true"
@@ -30,9 +29,9 @@
             android:layout_weight="1"
             android:gravity="bottom"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:text="@string/header_3_parable"/>
+            tools:text="Proverb of the" />
 
         <TextView
             android:id="@+id/name_text_view"
@@ -42,8 +41,8 @@
             android:layout_weight="1"
             android:gravity="top"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@android:color/white"
-            tools:text="name" />
+            android:textColor="@android:color/black"
+            tools:text="Wisdom" />
 
         <ImageView
             android:layout_width="24dp"
@@ -51,6 +50,6 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
-            android:src="@drawable/ic_play_arrow" />
+            android:src="@drawable/ic_play_arrow_black_48dp" />
     </RelativeLayout>
 </RelativeLayout>

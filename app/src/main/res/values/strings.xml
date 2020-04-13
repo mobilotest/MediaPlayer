@@ -3,14 +3,14 @@
     <string name="header1_proverbs">PROVERBS</string>
     <string name="header2_of_jesus">of JESUS</string>
 
-    <string name="header_3_parable">Parable of the </string>
-    <string name="proverb_ten_virgins"> Ten Virgins</string>
-    <string name="proverb_invited_chosen"> Wedding Feast</string>
-    <string name="proverb_dig_talent"> Talents</string>
-    <string name="proverb_sower"> Sower</string>
-    <string name="proverb_contractors"> Workers in the Vineyard</string>
-    <string name="proverb_prodigal_son"> Prodigal Son</string>
-    <string name="good_samaritan">Good Samaritan</string>
+    <string name="header_3_parable">Parable of the</string>
+    <string name="proverb_ten_virgins">Ten Virgins</string>
+    <string name="proverb_invited_chosen">Wedding Feast</string>
+    <string name="proverb_dig_talent">Talents</string>
+    <string name="proverb_sower">Sower</string>
+    <string name="proverb_contractors">Workers in the Vineyard</string>
+    <string name="proverb_prodigal_son">Prodigal Son</string>
+    <string name="proverb_good_samaritan">Good Samaritan</string>
 
     <string name="play">></string>
     <string name="pause">||</string>
