@@ -2,8 +2,8 @@ package com.example.mediaplayer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,13 +11,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private MediaPlayer mediaPlayer;
 
     final String header = "Parable of the"; //getString(R.string.header_3_parable);
 
@@ -29,11 +30,21 @@ public class MainActivity extends AppCompatActivity {
     final String sower = "Sower"; //getString(R.string.proverb_sower);
     final String samaritan = "Good Samaritan"; //getString(R.string.proverb_good_samaritan);
 
+    final String text_contractors = "Притча о работниках в винограднике — одна из притч Иисуса Христа, содержащаяся в Евангелии от Матфея. В ней Иисус уподобляет Царство Небесное винограднику, хозяин которого утром вышел нанимать работников. Первым нанятым он пообещал плату в один динарий. Затем хозяин ещё в третий, шестой и одиннадцатый час выходил нанимать работников говоря: «что следовать будет, дам вам» (Мф. 20:4). Когда закончился день, работники пришли к нему получать плату и, несмотря на то, что кто-то из них проработал полный день, а кто-то только один час — все получили одинаковую плату. Первые из нанятых возмутились: эти последние работали один час, и ты сравнял их с нами, перенёсшими тягость дня и зной. Он же в ответ сказал одному из них: друг! я не обижаю тебя; не за динарий ли ты договорился со мною? возьми своё и пойди; я же хочу дать этому последнему [то же], что и тебе; разве я не властен в своём делать, что хочу? или глаз твой завистлив от того, что я добр? Так будут последние первыми, и первые последними, ибо много званых, а мало избранных."; //getString(R.string.text_proverb_contractors);
+    final String text_talent = "И́бо [Он поступит], как человек, который, отправляясь в чужую страну, призвал рабов своих и поручил им имение своё: и одному дал он пять талантов, другому два, иному один, каждому по его силе; и тотчас отправился. Получивший пять талантов пошёл, употребил их в дело и приобрёл другие пять талантов; точно так же и получивший два таланта приобрёл другие два; получивший же один талант пошёл и закопал [его] в землю и скрыл серебро господина своего. По возвращении господин призвал к себе рабов и потребовал от них отчёта, как они распорядились со вверенными им деньгами. Рабов, употребивших деньги в дело, он похвалил, сказав: «хорошо, добрый и верный раб! в малом ты был верен, над многим тебя поставлю; войди в радость господина твоего». Последним подошёл раб, закопавший деньги в землю: «господин! я знал тебя, что ты человек жестокий, жнешь, где не сеял, и собираешь, где не рассыпал, и, убоявшись, пошёл и скрыл талант твой в земле; вот тебе твоё» (Мф. 25:24-25). В ответ господин обратился к нему и присутствующим: лукавый раб и ленивый! ты знал, что я жну, где не сеял, и собираю, где не рассыпал; посему надлежало тебе отдать серебро моё торгующим, и я, придя, получил бы моё с прибылью; итак, возьмите у него талант и дайте имеющему десять талантов, ибо всякому имеющему дастся и приумножится, а у неимеющего отнимется и то, что имеет; а негодного раба выбросьте во тьму внешнюю: там будет плач и скрежет зубов."; //getString(R.string.text_proverb_dig_talent);
+    final String text_virgins = "Тогда подобно будет Царство Небесное десяти девам, которые, взяв светильники свои, вышли навстречу жениху. Из них пять было мудрых и пять неразумных. Неразумные, взяв светильники свои, не взяли с собою масла. Мудрые же, вместе со светильниками своими, взяли масла в сосудах своих. И как жених замедлил, то задремали все и уснули. Но в полночь раздался крик: вот, жених идёт, выходите навстречу ему. Тогда встали все девы те и поправили светильники свои. Неразумные же сказали мудрым: дайте нам вашего масла, потому что светильники наши гаснут. А мудрые отвечали: чтобы не случилось недостатка и у нас и у вас, пойдите лучше к продающим и купите себе. Когда же пошли они покупать, пришёл жених, и готовые вошли с ним на брачный пир, и двери затворились; после приходят и прочие девы, и говорят: Господи! Господи! отвори нам. Он же сказал им в ответ: истинно говорю вам: не знаю вас. Итак, бодрствуйте, потому что не знаете ни дня, ни часа, в который приидет Сын Человеческий."; //getString(R.string.text_proverb_ten_virgins);
+    final String text_prodigal = "У некоторого человека было два сына; и сказал младший из них отцу: отче! дай мне следующую часть имения. И отец разделил им имение. По прошествии немногих дней младший сын, собрав всё, пошел в дальнюю сторону и там расточил имение своё, живя распутно. Когда же он прожил всё, настал великий голод в той стране, и он начал нуждаться; и пошел, пристал к одному из жителей страны той, а тот послал его на поля свои пасти свиней; и он рад был наполнить чрево своё рожками[5], которые ели свиньи, но никто не давал ему. Придя же в себя, сказал: сколько наемников у отца моего избыточествуют хлебом, а я умираю от голода; встану, пойду к отцу моему и скажу ему: отче! я согрешил против неба и пред тобою и уже недостоин называться сыном твоим; прими меня в число наемников твоих. Встал и пошел к отцу своему. И когда он был ещё далеко, увидел его отец его и сжалился; и, побежав, пал ему на шею и целовал его. Сын же сказал ему: отче! я согрешил против неба и пред тобою и уже недостоин называться сыном твоим. А отец сказал рабам своим: принесите лучшую одежду и оденьте его, и дайте перстень на руку его и обувь на ноги; и приведите откормленного теленка, и заколите; станем есть и веселиться! ибо этот сын мой был мертв и ожил, пропадал и нашелся. И начали веселиться. Старший же сын его был на поле; и возвращаясь, когда приблизился к дому, услышал пение и ликование; и, призвав одного из слуг, спросил: что это такое? Он сказал ему: брат твой пришел, и отец твой заколол откормленного теленка, потому что принял его здоровым. Он осердился и не хотел войти. Отец же его, выйдя, звал его. Но он сказал в ответ отцу: вот, я столько лет служу тебе и никогда не преступал приказания твоего, но ты никогда не дал мне и козлёнка, чтобы мне повеселиться с друзьями моими; а когда этот сын твой, расточивший имение своё с блудницами, пришел, ты заколол для него откормленного теленка. Он же сказал ему: сын мой! ты всегда со мною, и всё мое твое, а о том надобно было радоваться и веселиться, что брат твой сей был мертв и ожил, пропадал и нашелся."; //getString(R.string.text_proverb_prodigal_son);
+    final String text_wedding = "Иисус, продолжая говорить им притчами, сказал: Царство Небесное подобно человеку царю, который сделал брачный пир для сына своего и послал рабов своих звать званых на брачный пир; и не хотели придти. Опять послал других рабов, сказав: скажите званым: вот, я приготовил обед мой, тельцы мои и что откормлено, заколото, и всё готово; приходите на брачный пир. Но они, пренебрегши тò, пошли, кто на поле своё, а кто на торговлю свою; Прочие же, схватив рабов его, оскорбили и убили их. Услышав о сем, царь разгневался, и, послав войска свои, истребил убийц оных и сжег город их. Тогда говорит он рабам своим: брачный пир готов, а званые не были достойны; Итак пойдите на распутия и всех, кого найдете, зовите на брачный пир. И рабы те, выйдя на дороги, собрали всех, кого только нашли, и злых и добрых; и брачный пир наполнился возлежащими. Царь, войдя посмотреть возлежащих, увидел там человека, одетого не в брачную одежду, И говорит ему: друг! как ты вошел сюда не в брачной одежде? Он же молчал. Тогда сказал царь слугам: связав ему руки и ноги, возьмите его и бросьте во тьму внешнюю; там будет плач и скрежет зубов; Ибо много званых, а мало избранных. Он же сказал ему: один человек сделал большой ужин и звал многих, и когда наступило время ужина, послал раба своего сказать званым: идите, ибо уже все готово. И начали все, как бы сговорившись, извиняться. Первый сказал ему: я купил землю и мне нужно пойти посмотреть её; прошу тебя, извини меня. Другой сказал: я купил пять пар волов и иду испытать их; прошу тебя, извини меня. Третий сказал: я женился и потому не могу придти. И, возвратившись, раб тот донес о сем господину своему. Тогда, разгневавшись, хозяин дома сказал рабу своему: пойди скорее по улицам и переулкам города и приведи сюда нищих, увечных, хромых и слепых. И сказал раб: господин! исполнено, как приказал ты, и еще есть место. Господин сказал рабу: пойди по дорогам и изгородям и убеди придти, чтобы наполнился дом мой. Ибо сказываю вам, что никто из тех званых не вкусит моего ужина, ибо много званых, но мало избранных."; //getString(R.string.text_proverb_invited_chosen);
+    final String text_sower = "Bот, вышел сеятель сеять; и когда он сеял, иное упало при дороге, и налетели птицы и поклевали то; иное упало на места каменистые, где немного было земли, и скоро взошло, потому что земля была неглубока. Когда же взошло солнце, увяло, и, как не имело корня, засохло; иное упало в терние, и выросло терние и заглушило его; иное упало на добрую землю и принесло плод: одно во сто крат, а другое в шестьдесят, иное же в тридцать. ...к всякому, слушающему слово о Царствии и не разумеющему, приходит лукавый и похищает посеянное в сердце его — вот кого означает посеянное при дороге. А посеянное на каменистых местах означает того, кто слышит слово и тотчас с радостью принимает его; но не имеет в себе корня и непостоянен: когда настанет скорбь или гонение за слово, тотчас соблазняется. А посеянное в тернии означает того, кто слышит слово, но забота века сего и обольщение богатства заглушает слово, и оно бывает бесплодно. Посеянное же на доброй земле означает слышащего слово и разумеющего, который и бывает плодоносен, так что иной приносит плод во сто крат, иной в шестьдесят, а иной в тридцать."; //getString(R.string.text_proverb_sower);
+    final String text_samaritan = "Hекоторый человек шел из Иерусалима в Иерихон и попался разбойникам, которые сняли с него одежду, изранили его и ушли, оставив его едва живым. По случаю один священник шел тою дорогою и, увидев его, прошел мимо. Также и левит, быв на том месте, подошел, посмотрел и прошел мимо. Самарянин же некто, проезжая, нашел на него и, увидев его, сжалился и, подойдя, перевязал ему раны, возливая масло и вино; и, посадив его на своего осла, привез его в гостиницу и позаботился о нем; а на другой день, отъезжая, вынул два динария, дал содержателю гостиницы и сказал ему: позаботься о нем; и если издержишь что более, я, когда возвращусь, отдам тебе. Кто из этих троих, думаешь ты, был ближний попавшемуся разбойникам? Он сказал: оказавший ему милость. Тогда Иисус сказал ему: иди, и ты поступай так же."; //getString(R.string.text_proverb_good_samaritan);
+
     ListView listView;
 
     final int[] parableImages = {R.drawable.nayomniki, R.drawable.talent, R.drawable.virgins, R.drawable.prodigal, R.drawable.pir, R.drawable.sower, R.drawable.good};
     final String[] parableHeader = {header,header,header,header,header,header,header};
     final String[] parableNames = {contractors, talent, virgins, prodigal, wedding, sower, samaritan};
+    final String[] parableText = {text_contractors, text_talent, text_virgins, text_prodigal, text_wedding, text_sower, text_samaritan};
+    final int[] parableAudio = {R.raw.nayomniki, R.raw.zarytyi_talant, R.raw.ten_dev, R.raw.bludnyi_syn, R.raw.zvanye_i_izbranye, R.raw.seyatel, R.raw.dobryi_samarityanin};
 
     final List<Proverb> listItems = new ArrayList<>();
 
@@ -48,41 +59,12 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.list);
 
         for (int i = 0; i < parableNames.length; i++) {
-            Proverb proverb = new Proverb(parableImages[i], parableHeader[i], parableNames[i]);
+            Proverb proverb = new Proverb(parableImages[i], parableHeader[i], parableNames[i], parableText[i], parableAudio[i]);
             listItems.add(proverb);
         }
 
         customAdapter = new CustomAdapter(listItems, this);
         listView.setAdapter(customAdapter);
-    }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu.menu);
-//        MenuItem menuItem = menu.findItem(R.id.app_bar_search);
-//        SearchView searchView = (SearchView) menuItem.getActionView();
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                customAdapter.getFilter().filter(newText);
-//                return true;
-//            }
-//        });
-//        return true;
-//    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if(id == R.id.app_bar_search){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public class CustomAdapter extends BaseAdapter { //implements Filterable {
@@ -125,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
             image.setImageResource(itemsProverbListFiltered.get(position).getmImage());
             proverb.setText(itemsProverbListFiltered.get(position).getmProverb());
             name.setText(itemsProverbListFiltered.get(position).getmName());
+//            text.setText(itemsProverbListFiltered.get(position).getmText());
+//            mediaPlayer = MediaPlayer.create(this, (itemsProverbListFiltered.get(position).getmAudio()));
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -134,37 +118,5 @@ public class MainActivity extends AppCompatActivity {
             });
             return view;
         }
-
-//        @Override
-//        public Filter getFilter() {
-//            Filter filter = new Filter() {
-//                @Override
-//                protected FilterResults performFiltering(CharSequence constraint) {
-//                    FilterResults filterResults = new FilterResults();
-//                    if(constraint == null || constraint.length() == 0){
-//                        filterResults.count = itemsProverbList.size();
-//                        filterResults.values = itemsProverbList;
-//                    }else{
-//                        String searchStr = constraint.toString().toLowerCase();
-//                        List<Proverb> resultData = new ArrayList<>();
-//                        for(Proverb proverb: itemsProverbList){
-//                            if(itemsProverbList.getmName().contains(searchStr) || itemsProverbList.getmProverb().contains(searchStr)){
-//                                resultData.add(itemsProverbList);
-//                            }
-//                            filterResults.count = resultData.size();
-//                            filterResults.values = resultData;
-//                        }
-//                    }
-//                    return filterResults;
-//                }
-//
-//                @Override
-//                protected void publishResults(CharSequence constraint, FilterResults results) {
-//                    itemsProverbListFiltered = (List<Proverb>) results.values;
-//                    notifyDataSetChanged();
-//                }
-//            }
-//            return filter;
-//        }
     }
 }
