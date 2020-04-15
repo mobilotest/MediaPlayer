@@ -33,6 +33,11 @@ public class ItemViewActivity extends AppCompatActivity {
 
     Proverb proverb;
 
+    private Handler myHandler = new Handler();
+
+    /**
+     * Handles playback of all the sound files
+     */
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
     private MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
@@ -42,7 +47,7 @@ public class ItemViewActivity extends AppCompatActivity {
         }
     };
 
-    private Handler myHandler = new Handler();
+    private Handler handler = new Handler();
     AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
                 public void onAudioFocusChange(int focusChange) {
@@ -64,9 +69,11 @@ public class ItemViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_itemview);
 
+        Intent intent = getIntent();
+
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        Intent intent = getIntent();
+        releaseMediaPlayer();
 
         btnPlay = (Button) findViewById(R.id.btnPlay);
         btnPause = (Button) findViewById(R.id.btnPause);
@@ -83,8 +90,6 @@ public class ItemViewActivity extends AppCompatActivity {
         tvFinalTime = (TextView) findViewById(R.id.tvStopTime);
 
         tvText = (TextView) findViewById(R.id.text_proverb);
-
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         if (intent.getExtras() != null) {
             proverb = (Proverb) intent.getSerializableExtra("item");
@@ -106,18 +111,65 @@ public class ItemViewActivity extends AppCompatActivity {
         tvText.setText(proverb.getmText());
         tvText.setMovementMethod(new ScrollingMovementMethod());
 
-        mMediaPlayer = MediaPlayer.create(this, R.raw.bludnyi_syn);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekBar.setClickable(false);
         btnPause.setEnabled(false);
 
+        // Request audio focus for playback
+        int result = mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
+                // Use the music stream.
+                AudioManager.STREAM_MUSIC,
+                // Request permanent focus.
+                AudioManager.AUDIOFOCUS_GAIN);
+
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            // Start playback
+            // Create and setup the {@link MediaPlayer} for the audio resource associated with the current proverb
+            mMediaPlayer = MediaPlayer.create(ItemViewActivity.this, proverb.getmAudio());
+            // Start the audio file
+            mMediaPlayer.start();
+            mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
+
+            finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
+            startTime = mMediaPlayer.getCurrentPosition();
+
+            if (oneTimeOnly == 0) {
+                seekBar.setMax((int) finalTime);
+                oneTimeOnly = 1;
+            }
+
+            tvFinalTime.setText(String.format("%d min, %d sec",
+                    TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                    startTime)))
+            );
+
+            tvStartTime.setText(String.format("%d min, %d sec",
+                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                    startTime)))
+            );
+
+            seekBar.setProgress((int) startTime);
+            btnPause.setEnabled(true);
+            btnPlay.setEnabled(false);
+            myHandler.postDelayed(UpdateSongTime, 100);
+        }
+
+//        mMediaPlayer = MediaPlayer.create(ItemViewActivity.this, proverb.getmAudio());
+
+        /**
+         *   This method responsible for Audion behavior when PLAY btn has clicked
+         * */
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "Playing sound", Toast.LENGTH_SHORT).show();
                 mMediaPlayer.start();
 
-                finalTime = mMediaPlayer.getDuration();
+                finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
                 startTime = mMediaPlayer.getCurrentPosition();
 
                 if (oneTimeOnly == 0) {
@@ -129,7 +181,7 @@ public class ItemViewActivity extends AppCompatActivity {
                         TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
                         TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
-                                        finalTime)))
+                                        startTime)))
                 );
 
                 tvStartTime.setText(String.format("%d min, %d sec",
@@ -142,9 +194,13 @@ public class ItemViewActivity extends AppCompatActivity {
                 seekBar.setProgress((int) startTime);
                 btnPause.setEnabled(true);
                 btnPlay.setEnabled(false);
+                myHandler.postDelayed(UpdateSongTime, 100);
             }
         });
 
+        /**
+         *   This method responsible for Audion behavior when PAUSE btn has clicked
+         * */
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,22 +211,58 @@ public class ItemViewActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         *   This method responsible for Audion behavior when STOP btn has clicked
+         * */
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Stop sound", Toast.LENGTH_SHORT).show();
-                mMediaPlayer.pause();
+                Toast.makeText(getApplicationContext(), "Stop playing", Toast.LENGTH_SHORT).show();
+                mMediaPlayer.stop();
                 btnPause.setEnabled(true);
                 btnPlay.setEnabled(true);
+
+                tvStartTime.setText(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                        TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                        toMinutes((long) startTime))));
+                tvFinalTime.setText(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                        TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                        toMinutes((long) finalTime))));
+                startTime = 0;
+                seekBar.setProgress((int) startTime);
+                seekBar.setMax((int) finalTime);
+//                mMediaPlayer = MediaPlayer.create(proverb.getmAudio());
+//                releaseMediaPlayer();
             }
         });
 
+        /**
+         *   This method responsible for back to the MAIN MENU navigation when btn has clicked
+         * */
         btnMainMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ItemViewActivity.this, MainActivity.class));
             }
         });
+    }
+
+    //getting back to listview
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private Runnable UpdateSongTime = new Runnable() {
@@ -180,14 +272,25 @@ public class ItemViewActivity extends AppCompatActivity {
                     TimeUnit.MILLISECONDS.toMinutes((long) startTime),
                     TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                    toMinutes((long) startTime)))
-            );
+                                    toMinutes((long) startTime))));
+
+            finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
+            tvFinalTime.setText(String.format("%d min, %d sec",
+                    TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                    TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                    toMinutes((long) finalTime))));
             seekBar.setProgress((int) startTime);
             myHandler.postDelayed(this, 100);
-            btnPause.setEnabled(true);
-            btnPlay.setEnabled(false);
         }
     };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // When the activity is stopped, release the media player resources because we won't be playing any more sounds.
+        releaseMediaPlayer();
+    }
 
     /**
      * Clean up the media player by releasing its resources.
@@ -207,19 +310,5 @@ public class ItemViewActivity extends AppCompatActivity {
             // Abandon audio focus when playback complete
             mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
         }
-    }
-
-    //getting back to listview
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 }

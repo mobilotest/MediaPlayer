@@ -13,11 +13,11 @@ public class Proverb implements Serializable {
     /** Exact name for the proverb */
     private String mName;
 
-    /** Audio resource ID for the proverb */
-    private int mAudio;
-
     /** Text of the proverb */
     private String mText;
+
+    /** Audio resource ID for the proverb */
+    private int mAudio;
 
     /**
      * Create a new Proverb object.

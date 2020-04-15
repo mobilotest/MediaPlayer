@@ -2,7 +2,6 @@ package com.example.mediaplayer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private MediaPlayer mediaPlayer;
 
     final String header = "Parable of the"; //getString(R.string.header_3_parable);
 
@@ -70,18 +67,16 @@ public class MainActivity extends AppCompatActivity {
     public class CustomAdapter extends BaseAdapter { //implements Filterable {
 
         private List<Proverb> itemsProverbList;
-        private List<Proverb> itemsProverbListFiltered;
         private Context context;
 
         public CustomAdapter(List<Proverb> itemsProverbList, Context context) {
             this.itemsProverbList = itemsProverbList;
-            this.itemsProverbListFiltered = itemsProverbList;
             this.context = context;
         }
 
         @Override
         public int getCount() {
-            return itemsProverbListFiltered.size();
+            return itemsProverbList.size();
         }
 
         @Override
@@ -104,16 +99,15 @@ public class MainActivity extends AppCompatActivity {
             TextView name = view.findViewById(R.id.name_text_view);
 
             //set the data
-            image.setImageResource(itemsProverbListFiltered.get(position).getmImage());
-            proverb.setText(itemsProverbListFiltered.get(position).getmProverb());
-            name.setText(itemsProverbListFiltered.get(position).getmName());
-//            text.setText(itemsProverbListFiltered.get(position).getmText());
-//            mediaPlayer = MediaPlayer.create(this, (itemsProverbListFiltered.get(position).getmAudio()));
+            image.setImageResource(itemsProverbList.get(position).getmImage());
+            proverb.setText(itemsProverbList.get(position).getmProverb());
+            name.setText(itemsProverbList.get(position).getmName());
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(MainActivity.this, ItemViewActivity.class).putExtra("item", itemsProverbListFiltered.get(position)));
+
+                    startActivity(new Intent(MainActivity.this, ItemViewActivity.class).putExtra("item", itemsProverbList.get(position)));
                 }
             });
             return view;
