@@ -30,7 +30,6 @@
             android:gravity="bottom"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@android:color/black"
-            android:textStyle="bold"
             tools:text="Proverb of the" />
 
         <TextView
@@ -40,6 +39,7 @@
             android:layout_below="@id/proverb_text_view"
             android:layout_weight="1"
             android:gravity="top"
+            android:textStyle="bold"
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="@android:color/black"
             tools:text="Wisdom" />

@@ -39,6 +39,7 @@
         android:layout_marginStart="72dp"
         android:layout_marginBottom="12dp"
         android:text="@string/header2_of_jesus"
+        android:textStyle="bold"
         android:textSize="50sp"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintStart_toStartOf="@+id/view" />

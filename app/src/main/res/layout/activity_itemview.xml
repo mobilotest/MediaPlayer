@@ -37,6 +37,7 @@
         android:layout_marginEnd="8dp"
         android:text="@string/proverb_contractors"
         android:textSize="35sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/text_proverb"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_Header"
