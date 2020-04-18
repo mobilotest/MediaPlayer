@@ -180,25 +180,9 @@ public class ItemViewActivity extends AppCompatActivity {
         btnMainMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onStop();
                 startActivity(new Intent(ItemViewActivity.this, MainActivity.class));
             }
         });
-    }
-
-    //getting back to listview
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onStop();
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     private Runnable UpdateSongTime = new Runnable() {
@@ -221,9 +205,31 @@ public class ItemViewActivity extends AppCompatActivity {
         }
     };
 
+    //getting back to listview
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            super.onBackPressed();
+        }
+        if (myHandler != null) myHandler.removeCallbacks(null);
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+        }
+        if (myHandler != null)
+            myHandler.removeCallbacks(null);
+        super.onBackPressed();
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
+        if (myHandler != null)
+            myHandler.removeCallbacks(null);
         // When the activity is stopped, release the media player resources because we won't be playing any more sounds.
         releaseMediaPlayer();
     }
