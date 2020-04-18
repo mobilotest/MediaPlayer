@@ -101,7 +101,6 @@ public class ItemViewActivity extends AppCompatActivity {
 
         if (oneTimeOnly == 0) {
             seekBar.setMax((int) finalTime);
-            oneTimeOnly = 1;
         }
 
         tvFinalTime.setText(String.format("%d min, %d sec",
@@ -129,23 +128,18 @@ public class ItemViewActivity extends AppCompatActivity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                releaseMediaPlayer();
+
                 Toast.makeText(getApplicationContext(), "Playing sound", Toast.LENGTH_SHORT).show();
                 mMediaPlayer.start();
 
-                finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
                 startTime = mMediaPlayer.getCurrentPosition();
+                finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
 
                 if (oneTimeOnly == 0) {
                     seekBar.setMax((int) finalTime);
-                    oneTimeOnly = 1;
                 }
-
-                tvFinalTime.setText(String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
-                        TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
-                                        startTime)))
-                );
 
                 tvStartTime.setText(String.format("%d min, %d sec",
                         TimeUnit.MILLISECONDS.toMinutes((long) startTime),
@@ -154,10 +148,19 @@ public class ItemViewActivity extends AppCompatActivity {
                                         startTime)))
                 );
 
+                tvFinalTime.setText(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                        TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                        finalTime)))
+                );
+
                 seekBar.setProgress((int) startTime);
+                myHandler.postDelayed(UpdateSongTime, 100);
+
                 btnPause.setEnabled(true);
                 btnPlay.setEnabled(false);
-                myHandler.postDelayed(UpdateSongTime, 100);
+
             }
         });
 
@@ -229,7 +232,7 @@ public class ItemViewActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (myHandler != null)
-            myHandler.removeCallbacks(null);
+            myHandler.removeCallbacks(UpdateSongTime);
         // When the activity is stopped, release the media player resources because we won't be playing any more sounds.
         releaseMediaPlayer();
     }

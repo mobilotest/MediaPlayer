@@ -71,6 +71,8 @@
     android:layout_height="30dp"
     android:layout_above="@+id/btnPlay"
     android:layout_marginEnd="8dp"
+        android:max="200"
+        android:progress="60"
     app:layout_constraintBottom_toBottomOf="@+id/tvStartTime"
     app:layout_constraintEnd_toStartOf="@+id/tvStopTime"
     app:layout_constraintTop_toTopOf="@+id/tvStartTime"
