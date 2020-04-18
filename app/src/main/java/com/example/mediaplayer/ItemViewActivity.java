@@ -1,8 +1,6 @@
 package com.example.mediaplayer;
 
-import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +21,7 @@ public class ItemViewActivity extends AppCompatActivity {
 
     private ImageView headerImage;
 
-    private Button btnPlay, btnPause, btnStop, btnMainMenu;
+    private Button btnPlay, btnPause, btnMainMenu;
     private TextView tv_Header, tv_Name, tvText, tvStartTime, tvFinalTime;
     private SeekBar seekBar;
 
@@ -39,30 +37,12 @@ public class ItemViewActivity extends AppCompatActivity {
      * Handles playback of all the sound files
      */
     private MediaPlayer mMediaPlayer;
-    private AudioManager mAudioManager;
     private MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
             releaseMediaPlayer();
         }
     };
-
-    private Handler handler = new Handler();
-    AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener =
-            new AudioManager.OnAudioFocusChangeListener() {
-                public void onAudioFocusChange(int focusChange) {
-                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-                        mMediaPlayer.pause();
-                        mMediaPlayer.seekTo(0);
-                    } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                        mMediaPlayer.start();
-                    } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                        // Your app has been granted audio focus again
-                        // Raise volume to normal, restart playback if necessary
-                        releaseMediaPlayer();
-                    }
-                }
-            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,17 +51,11 @@ public class ItemViewActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-        releaseMediaPlayer();
-
         btnPlay = (Button) findViewById(R.id.btnPlay);
         btnPause = (Button) findViewById(R.id.btnPause);
         btnPause.setEnabled(false);
-        btnStop = (Button) findViewById(R.id.btnStop);
         btnPlay.setBackgroundResource(R.drawable.ic_play_arrow_black_48dp);
         btnPause.setBackgroundResource(R.drawable.ic_pause_black_48dp);
-        btnStop.setBackgroundResource(R.drawable.ic_stop_black_48dp);
         btnMainMenu = (Button) findViewById(R.id.btnMenu);
 
         tvStartTime = (TextView) findViewById(R.id.tvStartTime);
@@ -115,50 +89,39 @@ public class ItemViewActivity extends AppCompatActivity {
         seekBar.setClickable(false);
         btnPause.setEnabled(false);
 
-        // Request audio focus for playback
-        int result = mAudioManager.requestAudioFocus(mOnAudioFocusChangeListener,
-                // Use the music stream.
-                AudioManager.STREAM_MUSIC,
-                // Request permanent focus.
-                AudioManager.AUDIOFOCUS_GAIN);
+        // Start playback
+        // Create and setup the {@link MediaPlayer} for the audio resource associated with the current proverb
+        mMediaPlayer = MediaPlayer.create(ItemViewActivity.this, proverb.getmAudio());
+        // Start the audio file
+        mMediaPlayer.start();
+        mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
 
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            // Start playback
-            // Create and setup the {@link MediaPlayer} for the audio resource associated with the current proverb
-            mMediaPlayer = MediaPlayer.create(ItemViewActivity.this, proverb.getmAudio());
-            // Start the audio file
-            mMediaPlayer.start();
-            mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
+        finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
+        startTime = mMediaPlayer.getCurrentPosition();
 
-            finalTime = mMediaPlayer.getDuration() - mMediaPlayer.getCurrentPosition();
-            startTime = mMediaPlayer.getCurrentPosition();
-
-            if (oneTimeOnly == 0) {
-                seekBar.setMax((int) finalTime);
-                oneTimeOnly = 1;
-            }
-
-            tvFinalTime.setText(String.format("%d min, %d sec",
-                    TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
-                                    startTime)))
-            );
-
-            tvStartTime.setText(String.format("%d min, %d sec",
-                    TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                    TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
-                                    startTime)))
-            );
-
-            seekBar.setProgress((int) startTime);
-            btnPause.setEnabled(true);
-            btnPlay.setEnabled(false);
-            myHandler.postDelayed(UpdateSongTime, 100);
+        if (oneTimeOnly == 0) {
+            seekBar.setMax((int) finalTime);
+            oneTimeOnly = 1;
         }
 
-//        mMediaPlayer = MediaPlayer.create(ItemViewActivity.this, proverb.getmAudio());
+        tvFinalTime.setText(String.format("%d min, %d sec",
+                TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                startTime)))
+        );
+
+        tvStartTime.setText(String.format("%d min, %d sec",
+                TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                startTime)))
+        );
+
+        seekBar.setProgress((int) startTime);
+        btnPause.setEnabled(true);
+        btnPlay.setEnabled(false);
+        myHandler.postDelayed(UpdateSongTime, 100);
 
         /**
          *   This method responsible for Audion behavior when PLAY btn has clicked
@@ -212,40 +175,12 @@ public class ItemViewActivity extends AppCompatActivity {
         });
 
         /**
-         *   This method responsible for Audion behavior when STOP btn has clicked
-         * */
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Stop playing", Toast.LENGTH_SHORT).show();
-                mMediaPlayer.stop();
-                btnPause.setEnabled(true);
-                btnPlay.setEnabled(true);
-
-                tvStartTime.setText(String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                        TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                        toMinutes((long) startTime))));
-                tvFinalTime.setText(String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
-                        TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                        toMinutes((long) finalTime))));
-                startTime = 0;
-                seekBar.setProgress((int) startTime);
-                seekBar.setMax((int) finalTime);
-//                mMediaPlayer = MediaPlayer.create(proverb.getmAudio());
-//                releaseMediaPlayer();
-            }
-        });
-
-        /**
          *   This method responsible for back to the MAIN MENU navigation when btn has clicked
          * */
         btnMainMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                onStop();
                 startActivity(new Intent(ItemViewActivity.this, MainActivity.class));
             }
         });
@@ -255,6 +190,7 @@ public class ItemViewActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            onStop();
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -297,18 +233,16 @@ public class ItemViewActivity extends AppCompatActivity {
      */
     private void releaseMediaPlayer() {
         // If the media player is not null, then it may be currently playing a sound.
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             // Regardless of the current state of the media player, release its resources
             // because we no longer need it.
+            mMediaPlayer.stop();
+            mMediaPlayer.reset();
             mMediaPlayer.release();
-
             // Set the media player back to null. For our code, we've decided that
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mMediaPlayer = null;
-
-            // Abandon audio focus when playback complete
-            mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
         }
     }
 }
