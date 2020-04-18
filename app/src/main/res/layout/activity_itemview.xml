@@ -12,12 +12,12 @@
         android:id="@+id/img_Header"
         android:layout_width="match_parent"
         android:layout_height="222dp"
-        android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
         android:scaleType="centerCrop"
         android:src="@drawable/nayomniki"
         app:layout_constraintBottom_toTopOf="@+id/tv_Header"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +53,7 @@
     <TextView
         android:id="@+id/text_proverb"
         android:layout_width="360dp"
-        android:layout_height="150dp"
+        android:layout_height="155dp"
         android:layout_marginBottom="8dp"
         android:padding="20dp"
         android:ems="10"
@@ -83,7 +83,7 @@
         android:layout_width="92dp"
         android:layout_height="30dp"
         android:layout_above="@+id/seekBar"
-        android:layout_marginTop="188dp"
+        android:layout_marginTop="196dp"
         android:layout_marginEnd="6dp"
         android:text="Start"
         android:textAppearance="?android:attr/textAppearanceSmall"

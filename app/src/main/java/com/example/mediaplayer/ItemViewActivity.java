@@ -129,8 +129,6 @@ public class ItemViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                releaseMediaPlayer();
-
                 Toast.makeText(getApplicationContext(), "Playing sound", Toast.LENGTH_SHORT).show();
                 mMediaPlayer.start();
 
@@ -220,9 +218,6 @@ public class ItemViewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-        }
         if (myHandler != null)
             myHandler.removeCallbacks(null);
         super.onBackPressed();
