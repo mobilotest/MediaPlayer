@@ -1,5 +1,5 @@
 # MediaPlayer
-New Project for Google Nano-degree
+New Project for Google Nano-degree #UdacityLevelUp
 
 The goal of this project is to design and layout a music playing app that displays the list of available songs in a ListView or a GridView, navigates to a details screen of the currently playing song, and uses explicit intents to navigate around the app.
 
